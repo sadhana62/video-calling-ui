@@ -23,19 +23,19 @@ mongoose.connect(process.env.MONGO_URI, {
 .then(() => console.log('MongoDB connected'))
 .catch((err) => console.error('MongoDB connection error:', err));
 
-// Basic route
-// app.get('/', (req, res) => {
-//   res.send('API is running');
-// });
-
-// Serve static files from the React app
-const buildPath = path.resolve(__dirname, '../build');
-app.use(express.static(buildPath));
-
-// Catch-all route to serve React's index.html
-app.get('/*', (req, res) => {
-  res.sendFile(path.join(buildPath, 'index.html'));
-});
+// Serve static files from the React app only in development (local)
+if (process.env.NODE_ENV !== 'production') {
+  const buildPath = path.resolve(__dirname, '../build');
+  app.use(express.static(buildPath));
+  app.get('/*', (req, res) => {
+    res.sendFile(path.join(buildPath, 'index.html'));
+  });
+} else {
+  // In production, just serve API and health check
+  app.get('/', (req, res) => {
+    res.send('API is running');
+  });
+}
 
 // Signup route
 app.post('/api/signup', async (req, res) => {
