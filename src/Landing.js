@@ -50,7 +50,7 @@ function Landing() {
   // Image slider state and logic
   const landingImages = [
     "/images/landing/main.png",
-    "/images/landing/V1.jpg",
+    "/images/landing/v1.jpg",
     "/images/landing/v2.jpg",
     "/images/landing/v3.jpg",
     "/images/landing/v4.jpg",
