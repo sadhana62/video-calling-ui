@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import UserDashboard from "./UserDashboard";
 
 function Modal({ open, onClose, children }) {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-palette-pink rounded-xl shadow-lg p-8 w-full max-w-sm relative">
+      <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-sm relative">
         <button
-          className="absolute top-2 right-2 text-white text-2xl hover:text-palette-lime"
+          className="absolute top-2 right-2 text-black text-2xl hover:text-palette-lime"
           onClick={onClose}
           aria-label="Close"
         >
@@ -44,6 +45,31 @@ function Landing() {
   // Google login state
   const [googleLoginDisabled, setGoogleLoginDisabled] = useState(false);
 
+  const [user, setUser] = useState(null);
+
+  // Image slider state and logic
+  const landingImages = [
+    "/images/landing/main.png",
+    "/images/landing/V1.jpg",
+    "/images/landing/v2.jpg",
+    "/images/landing/v3.jpg",
+    "/images/landing/v4.jpg",
+    "/images/landing/v5.jpg",
+    "/images/landing/v6.jpg ",
+    "/images/landing/v7.jpg",
+    "/images/landing/v8.jpg",
+  
+    
+  ];
+  const [currentImage, setCurrentImage] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImage((prev) => (prev + 1) % landingImages.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, [landingImages.length]);
+
   // Handle login submit
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -51,7 +77,6 @@ function Landing() {
     setLoginError("");
     setLoginSuccess("");
     try {
-      console.log(process.env.REACT_APP_API_URL);
       const res = await fetch(`${process.env.REACT_APP_API_URL}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -62,6 +87,12 @@ function Landing() {
       setLoginSuccess(data.message);
       setLoginEmail("");
       setLoginPassword("");
+      // Set user and close modal after successful login
+      setTimeout(() => {
+        setShowLogin(false);
+        setLoginSuccess("");
+        setUser({ username: data.username || loginEmail.split("@")[0], email: loginEmail });
+      }, 2000);
     } catch (err) {
       setLoginError(err.message);
     } finally {
@@ -93,6 +124,11 @@ function Landing() {
       setSignupEmail("");
       setSignupPassword("");
       setSignupConfirm("");
+      // Close modal after successful signup
+      setTimeout(() => {
+        setShowSignup(false);
+        setSignupSuccess("");
+      }, 2000);
     } catch (err) {
       setSignupError(err.message);
     } finally {
@@ -100,14 +136,23 @@ function Landing() {
     }
   };
 
+  // Logout handler
+  const handleLogout = () => {
+    setUser(null);
+  };
+
+  if (user) {
+    return <UserDashboard user={user} onLogout={handleLogout} />;
+  }
+
   return (
-    <div className="min-h-screen bg-palette-pink flex flex-col items-center">
+    <div className="min-h-screen bg-white flex flex-col items-center">
       {/* Header */}
-      <header className="w-full flex justify-between items-center px-8 py-6 bg-palette-pink shadow-sm">
+      <header className="w-full flex justify-between items-center px-8 py-6 bg-white shadow-sm">
         <div className="flex items-center gap-2">
-          {/* <span className="font-extrabold text-2xl text-palette-lime">Tech.xyz</span> */}
+          {/* <span className="font-extrabold text-2xl text-black">Tech.xyz</span> */}
         </div>
-        <nav className="hidden md:flex gap-8 text-white font-medium">
+        <nav className="hidden md:flex gap-8 text-black font-medium">
           <a href="#" className="hover:text-palette-lime">How it works</a>
           <a href="#" className="hover:text-palette-lime">Features</a>
           <a href="#" className="hover:text-palette-lime">Solutions</a>
@@ -115,7 +160,7 @@ function Landing() {
         </nav>
         <div className="flex gap-4">
           <button
-            className="px-4 py-2 rounded-lg text-white font-semibold hover:bg-palette-lime"
+            className="px-4 py-2 rounded-lg text-black font-semibold hover:bg-palette-lime"
             onClick={() => setShowLogin(true)}
           >
             Login
@@ -130,12 +175,12 @@ function Landing() {
       </header>
       {/* Modals */}
       <Modal open={showLogin} onClose={() => { setShowLogin(false); setLoginError(""); setLoginSuccess(""); setGoogleLoginDisabled(false); }}>
-        <h2 className="text-2xl font-bold text-white mb-6 text-center">Login</h2>
+        <h2 className="text-2xl font-bold text-black mb-6 text-center">Login</h2>
         <form className="space-y-4 mb-4" onSubmit={handleLogin}>
           <input
             type="email"
             placeholder="Email"
-            className="w-full px-4 py-2 rounded-lg bg-palette-pink text-white border border-palette-cyan focus:outline-none focus:ring-2 focus:ring-palette-lime placeholder-white/80"
+            className="w-full px-4 py-2 rounded-lg bg-white text-black border border-palette-cyan focus:outline-none focus:ring-2 focus:ring-palette-lime placeholder-black/80"
             required
             value={loginEmail}
             onChange={e => setLoginEmail(e.target.value)}
@@ -143,7 +188,7 @@ function Landing() {
           <input
             type="password"
             placeholder="Password"
-            className="w-full px-4 py-2 rounded-lg bg-palette-pink text-white border border-palette-cyan focus:outline-none focus:ring-2 focus:ring-palette-lime placeholder-white/80"
+            className="w-full px-4 py-2 rounded-lg bg-white text-black border border-palette-cyan focus:outline-none focus:ring-2 focus:ring-palette-lime placeholder-black/80"
             required
             value={loginPassword}
             onChange={e => setLoginPassword(e.target.value)}
@@ -158,27 +203,19 @@ function Landing() {
           {loginError && <div className="text-red-300 text-sm text-center mt-2">{loginError}</div>}
           {loginSuccess && <div className="text-green-300 text-sm text-center mt-2">{loginSuccess}</div>}
         </form>
-        <div className="flex items-center my-2">
+        {/* <div className="flex items-center my-2">
           <div className="flex-grow h-px bg-palette-cyan" />
-          <span className="mx-2 text-white/70 text-sm">or</span>
+          <span className="mx-2 text-black/70 text-sm">or</span>
           <div className="flex-grow h-px bg-palette-cyan" />
-        </div>
-        <button
-          className={`w-full flex items-center justify-center gap-2 bg-white text-palette-pink font-semibold py-3 rounded-lg shadow transition mb-2 ${googleLoginDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-palette-lime'}`}
-          disabled={googleLoginDisabled}
-          onClick={() => setGoogleLoginDisabled(true)}
-        >
-          <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-6 h-6" />
-          {googleLoginDisabled ? 'Coming soon!' : 'Login with Google'}
-        </button>
+        </div> */}
       </Modal>
       <Modal open={showSignup} onClose={() => { setShowSignup(false); setSignupError(""); setSignupSuccess(""); setGoogleSignupDisabled(false); }}>
-        <h2 className="text-2xl font-bold text-white mb-6 text-center">Sign Up</h2>
+        <h2 className="text-2xl font-bold text-black mb-6 text-center">Sign Up</h2>
         <form className="space-y-4 mb-4" onSubmit={handleSignup}>
           <input
             type="text"
             placeholder="Username"
-            className="w-full px-4 py-2 rounded-lg bg-palette-pink text-white border border-palette-cyan focus:outline-none focus:ring-2 focus:ring-palette-lime placeholder-white/80"
+            className="w-full px-4 py-2 rounded-lg bg-white text-black border border-palette-cyan focus:outline-none focus:ring-2 focus:ring-palette-lime placeholder-black/80"
             required
             value={signupUsername}
             onChange={e => setSignupUsername(e.target.value)}
@@ -186,7 +223,7 @@ function Landing() {
           <input
             type="email"
             placeholder="Email"
-            className="w-full px-4 py-2 rounded-lg bg-palette-pink text-white border border-palette-cyan focus:outline-none focus:ring-2 focus:ring-palette-lime placeholder-white/80"
+            className="w-full px-4 py-2 rounded-lg bg-white text-black border border-palette-cyan focus:outline-none focus:ring-2 focus:ring-palette-lime placeholder-black/80"
             required
             value={signupEmail}
             onChange={e => setSignupEmail(e.target.value)}
@@ -194,7 +231,7 @@ function Landing() {
           <input
             type="password"
             placeholder="Password"
-            className="w-full px-4 py-2 rounded-lg bg-palette-pink text-white border border-palette-cyan focus:outline-none focus:ring-2 focus:ring-palette-lime placeholder-white/80"
+            className="w-full px-4 py-2 rounded-lg bg-white text-black border border-palette-cyan focus:outline-none focus:ring-2 focus:ring-palette-lime placeholder-black/80"
             required
             value={signupPassword}
             onChange={e => setSignupPassword(e.target.value)}
@@ -202,7 +239,7 @@ function Landing() {
           <input
             type="password"
             placeholder="Confirm Password"
-            className="w-full px-4 py-2 rounded-lg bg-palette-pink text-white border border-palette-cyan focus:outline-none focus:ring-2 focus:ring-palette-lime placeholder-white/80"
+            className="w-full px-4 py-2 rounded-lg bg-white text-black border border-palette-cyan focus:outline-none focus:ring-2 focus:ring-palette-lime placeholder-black/80"
             required
             value={signupConfirm}
             onChange={e => setSignupConfirm(e.target.value)}
@@ -217,105 +254,79 @@ function Landing() {
           {signupError && <div className="text-red-300 text-sm text-center mt-2">{signupError}</div>}
           {signupSuccess && <div className="text-green-300 text-sm text-center mt-2">{signupSuccess}</div>}
         </form>
-        <div className="flex items-center my-2">
+        {/* <div className="flex items-center my-2">
           <div className="flex-grow h-px bg-palette-cyan" />
-          <span className="mx-2 text-white/70 text-sm">or</span>
+          <span className="mx-2 text-black/70 text-sm">or</span>
           <div className="flex-grow h-px bg-palette-cyan" />
-        </div>
-        <button
-          className={`w-full flex items-center justify-center gap-2 bg-white text-palette-pink font-semibold py-3 rounded-lg shadow transition mb-2 ${googleSignupDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-palette-lime'}`}
-          disabled={googleSignupDisabled}
-          onClick={() => setGoogleSignupDisabled(true)}
-        >
-          <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-6 h-6" />
-          {googleSignupDisabled ? 'Coming soon!' : 'Sign up with Google'}
-        </button>
+        </div> */}
       </Modal>
       {/* Hero Section */}
-      <section className="w-full max-w-6xl flex flex-col md:flex-row items-center justify-between px-4 sm:px-8 py-12 gap-12 md:gap-20">
+      <section className="w-full max-w-6xl flex flex-col md:flex-row items-center justify-between py-6 md:py-12 gap-8 md:gap-16 bg-white rounded-3xl">
         {/* Left: Text and Actions */}
-        <div className="flex-1 w-full max-w-xl">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white mb-6 leading-tight">
+        <div className="flex-1 w-full max-w-full md:max-w-[650px] mb-8 md:mb-0">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-extrabold text-black mb-4 md:mb-6 leading-tight">
             UnifyCall <br />
-            with one-click 
+            with one-click
           </h1>
-          <h3 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-4 leading-tight"><span className="text-white">All Your Conversations, One Seamless Platform</span></h3>
-          <p className="text-base sm:text-lg lg:text-xl text-white mb-8">
-            Experience effortless voice, video, and messaging—connect your way, anytime, anywhere.
+          <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-5xl font-extrabold text-black mb-2 md:mb-4 leading-tight">
+            <span className="text-black">Seamless HD Video Calling for Everyone</span>
+          </h3>
+          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-black mb-4 md:mb-8">
+            Experience effortless, high-quality video meetings—connect face-to-face, anytime, anywhere.
           </p>
-          <div className="flex gap-4 mb-8">
-            <button className="bg-palette-cyan text-white px-6 py-3 rounded-lg font-semibold shadow transition flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mb-6 md:mb-8 w-full">
+            <button className="bg-palette-cyan text-white px-4 py-2 md:px-6 md:py-3 rounded-lg font-semibold shadow transition flex items-center gap-2 w-full sm:w-auto">
               Try for free <span className="ml-1">▶️</span>
             </button>
-            <button className="flex items-center gap-2 border border-palette-burgundy text-palette-burgundy px-6 py-3 rounded-lg font-semibold hover:bg-palette-lime transition">
+            <button className="flex items-center gap-2 border border-palette-burgundy text-palette-burgundy px-4 py-2 md:px-6 md:py-3 rounded-lg font-semibold hover:bg-palette-lime transition w-full sm:w-auto">
               Get a Demo
             </button>
           </div>
-          <ul className="text-white space-y-2 mb-8">
-            <li className="flex items-center gap-2"><span className="text-white">✔️</span> Makes it easy to interact remotely.</li>
-            <li className="flex items-center gap-2"><span className="text-white">✔️</span> Not limited by time, place, or reach.</li>
-            <li className="flex items-center gap-2"><span className="text-white">✔️</span> Facilitate the exchange of information with others widely.</li>
+          <ul className="text-black space-y-2 mb-6 md:mb-8 text-sm md:text-base">
+            <li className="flex items-center gap-2"><span className="text-black">✔️</span> Crystal clear HD video calls.</li>
+            <li className="flex items-center gap-2"><span className="text-black">✔️</span> Connect with up to 6 participants at once.</li>
+            <li className="flex items-center gap-2"><span className="text-black">✔️</span> Easy reactions and video controls.</li>
           </ul>
         </div>
-        {/* Right: Feature Cards Grid */}
-        <div className="flex-1 flex flex-col gap-6 items-center w-full max-w-lg">
-          <div className="grid grid-cols-3 gap-6 w-full">
-            {/* Voice Call Feature */}
-            <div className="bg-palette-cyan rounded-2xl shadow p-6 flex flex-col items-center">
-              <div className="flex -space-x-2 mb-2">
-                <span className="w-10 h-10 rounded-full bg-palette-burgundy text-white flex items-center justify-center font-bold text-lg border-2 border-white">A</span>
-                <span className="w-10 h-10 rounded-full bg-palette-mint text-white flex items-center justify-center font-bold text-lg border-2 border-white">B</span>
-                <span className="w-10 h-10 rounded-full bg-palette-blue text-white flex items-center justify-center font-bold text-lg border-2 border-white">C</span>
+        {/* Right: Image Slider */}
+        <div className="flex-1 w-full max-w-full md:max-w-[650px] flex flex-col gap-4 md:gap-6 items-center md:items-end pr-0 md:pr-8">
+          <div className="w-full flex justify-center md:justify-end">
+            <div className="relative w-full h-48 sm:h-64 md:w-[500px] md:h-[350px] lg:w-[650px] lg:h-[500px] flex items-center justify-center bg-gray-100 rounded-3xl overflow-hidden shadow-lg">
+              <img
+                src={landingImages[currentImage]}
+                alt={`Landing Slide ${currentImage + 1}`}
+                className="rounded-3xl w-full h-full object-contain transition-all duration-700 bg-white"
+              />
+              {/* Slider dots */}
+              <div className="absolute bottom-2 md:bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                {landingImages.map((_, idx) => (
+                  <button
+                    key={idx}
+                    className={`w-2 h-2 md:w-3 md:h-3 rounded-full border border-white ${currentImage === idx ? 'bg-palette-cyan' : 'bg-white/60'}`}
+                    onClick={() => setCurrentImage(idx)}
+                    aria-label={`Go to slide ${idx + 1}`}
+                  />
+                ))}
               </div>
-              <div className="bg-palette-burgundy p-2 rounded-full mb-2 text-2xl text-white"><span role="img" aria-label="call">📞</span></div>
-              <span className="font-semibold text-white">Voice Call</span>
-              <span className="text-xs text-white">Crystal clear audio</span>
             </div>
-            {/* Video Call Feature */}
-            <div className="bg-palette-cyan rounded-2xl shadow p-6 flex flex-col items-center">
-              <div className="flex -space-x-2 mb-2">
-                <span className="w-10 h-10 rounded-full bg-palette-cyan text-white flex items-center justify-center font-bold text-lg border-2 border-white">👩</span>
-                <span className="w-10 h-10 rounded-full bg-palette-lime text-white flex items-center justify-center font-bold text-lg border-2 border-white">🧑</span>
-                <span className="w-10 h-10 rounded-full bg-palette-mint text-white flex items-center justify-center font-bold text-lg border-2 border-white">👨</span>
-              </div>
-              <div className="bg-palette-pink p-2 rounded-full mb-2 text-2xl text-white"><span role="img" aria-label="video">🎥</span></div>
-              <span className="font-semibold text-white">Video Call</span>
-              <span className="text-xs text-white">HD video meetings</span>
-            </div>
-            {/* Chat Feature */}
-            <div className="bg-palette-cyan rounded-2xl shadow p-6 flex flex-col items-center">
-              <div className="flex -space-x-2 mb-2">
-                <span className="w-10 h-10 rounded-full bg-palette-lime text-white flex items-center justify-center font-bold text-lg border-2 border-white">D</span>
-                <span className="w-10 h-10 rounded-full bg-palette-cyan text-white flex items-center justify-center font-bold text-lg border-2 border-white">E</span>
-                <span className="w-10 h-10 rounded-full bg-palette-blue text-white flex items-center justify-center font-bold text-lg border-2 border-white">F</span>
-              </div>
-              <div className="bg-palette-lime p-2 rounded-full mb-2 text-2xl text-white"><span role="img" aria-label="chat">💬</span></div>
-              <span className="font-semibold text-white">Chat</span>
-              <span className="text-xs text-white">Instant messaging</span>
-            </div>
-          </div>
-          <div className="flex gap-4 mt-4">
-            <button className="bg-palette-cyan hover:bg-palette-lime text-white p-4 rounded-full shadow-lg text-xl cursor-pointer" title="Start Call"><span role="img" aria-label="call">📞</span></button>
-            <button className="bg-palette-mint hover:bg-palette-lime text-palette-mauve p-4 rounded-full shadow-lg text-xl cursor-pointer" title="Start Video Call"><span role="img" aria-label="video">🎥</span></button>
-            <button className="bg-palette-cyan hover:bg-palette-lime text-white p-4 rounded-full shadow-lg text-xl cursor-pointer" title="Open Chat"><span role="img" aria-label="chat">💬</span></button>
           </div>
         </div>
       </section>
       {/* Trusted by Section */}
       <section className="w-full max-w-6xl px-4 sm:px-8 py-8 flex flex-col items-center">
-        <span className="text-white mb-4">Trusted by over a lot of companies.</span>
+        <span className="text-black mb-4">Trusted by teams and professionals worldwide.</span>
         <div className="flex flex-wrap gap-8 justify-center items-center">
-          <span className="text-white font-bold text-xl">stripe</span>
-          <span className="text-white font-bold text-xl">loom</span>
-          <span className="text-white font-bold text-xl">WhatsApp</span>
-          <span className="text-white font-bold text-xl">YouTube</span>
-          <span className="text-white font-bold text-xl">zoom</span>
+          <span className="text-black font-bold text-xl">stripe</span>
+          <span className="text-black font-bold text-xl">loom</span>
+          <span className="text-black font-bold text-xl">WhatsApp</span>
+          <span className="text-black font-bold text-xl">YouTube</span>
+          <span className="text-black font-bold text-xl">zoom</span>
         </div>
       </section>
       {/* Features Section */}
       <section className="w-full max-w-6xl px-4 sm:px-8 py-12">
-        <h2 className="text-3xl font-extrabold text-white mb-6">More Flexible and Helpful for Users</h2>
-        <p className="text-lg text-white mb-4">Virtual communication is made easier and more efficient with our platform's innovative features. Have seamless conversations, share files, and collaborate in real time.</p>
+        <h2 className="text-3xl font-extrabold text-white mb-6">Flexible, Powerful Video Calling</h2>
+        <p className="text-lg text-white mb-4">Virtual communication is made easier and more efficient with our platform's innovative video call features. Have seamless face-to-face conversations and collaborate in real time.</p>
       </section>
     </div>
   );
