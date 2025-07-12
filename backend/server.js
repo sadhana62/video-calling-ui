@@ -1,5 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const http = require('http');
+const { Server } = require('socket.io');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const User = require('./models/User');
@@ -83,5 +85,39 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: '*', // For development only! Restrict in production.
+    methods: ['GET', 'POST']
+  }
+});
+
+io.on('connection', (socket) => {
+  // User joins a room
+  socket.on('join-room', (roomId, userId) => {
+    socket.join(roomId);
+
+    // Notify others in the room
+    socket.to(roomId).emit('user-joined', userId);
+
+    // Relay signaling data (offer/answer/ice)
+    socket.on('signal', (data) => {
+      // data: { to, from, type, offer/answer/candidate }
+      io.to(roomId).emit('signal', data);
+    });
+
+    // Relay chat messages
+    socket.on('chat-message', (msg) => {
+      io.to(roomId).emit('chat-message', { userId, msg });
+    });
+
+    // Notify on disconnect
+    socket.on('disconnect', () => {
+      socket.to(roomId).emit('user-left', userId);
+    });
+  });
+});
+
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`)); 
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`)); 

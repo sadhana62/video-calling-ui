@@ -4,10 +4,10 @@ import UserDashboard from "./UserDashboard";
 function Modal({ open, onClose, children }) {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-sm relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#00B5D9]/90">
+      <div className="bg-white rounded-2xl p-8 w-full max-w-sm relative">
         <button
-          className="absolute top-2 right-2 text-black text-2xl hover:text-palette-lime"
+          className="absolute top-2 right-2 text-black text-2xl hover:text-[#00B5D9]"
           onClick={onClose}
           aria-label="Close"
         >
@@ -161,139 +161,41 @@ function Landing() {
   }
 
   return (
-    <div className="min-h-screen bg-palette-grayLight flex flex-col items-center px-2 sm:px-4 md:px-8 py-4 sm:py-6 md:py-8 mx-auto">
-      {/* Header */}
-      <header className="w-full flex justify-between items-center px-8 py-6 bg-palette-grayLight rounded-2xl">
-        <div className="flex items-center gap-2">
-          {/* <span className="font-extrabold text-2xl text-black">Tech.xyz</span> */}
-        </div>
-        <nav className="hidden md:flex gap-8 text-palette-black font-medium">
-          <a href="#" className="hover:text-palette-blue">How it works</a>
-          <a href="#" className="hover:text-palette-blue">Features</a>
-          <a href="#" className="hover:text-palette-blue">Solutions</a>
-          <a href="#" className="hover:text-palette-blue">Pricing</a>
-        </nav>
-        <div className="flex gap-4">
+    <div className="min-h-screen flex flex-col items-center justify-center px-3 sm:px-6 md:px-12 py-4 sm:py-8 md:py-12 mx-auto" style={{ background: '#00B5D9' }}>
+      {/* Header with Login/Sign up */}
+      <header className="w-full flex justify-end items-center mb-6 px-2 sm:px-8">
+        <div className="flex gap-3 sm:gap-4">
           <button
-            className="px-4 py-2 rounded-lg text-palette-black font-semibold bg-palette-yellow hover:bg-palette-peach border border-palette-grayDark shadow"
+            className="px-4 py-2 rounded-full bg-white text-black font-semibold hover:bg-yellow-300 transition border border-white"
             onClick={() => setShowLogin(true)}
           >
             Login
           </button>
           <button
-            className="px-4 py-2 rounded-lg bg-palette-blue text-palette-black font-semibold hover:bg-palette-green border border-palette-grayDark shadow"
+            className="px-4 py-2 rounded-full bg-yellow-300 text-black font-semibold hover:bg-white transition border border-yellow-300"
             onClick={() => setShowSignup(true)}
           >
             Sign up
           </button>
         </div>
       </header>
-      {/* Modals */}
-      <Modal open={showLogin} onClose={() => { setShowLogin(false); setLoginError(""); setLoginSuccess(""); setGoogleLoginDisabled(false); }}>
-        <h2 className="text-2xl font-bold text-palette-black mb-6 text-center">Login</h2>
-        <form className="space-y-4 mb-4" onSubmit={handleLogin}>
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full px-4 py-2 rounded-lg bg-palette-gray text-palette-black border border-palette-blue focus:outline-none focus:ring-2 focus:ring-palette-green placeholder-palette-grayDark"
-            required
-            value={loginEmail}
-            onChange={e => setLoginEmail(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            className="w-full px-4 py-2 rounded-lg bg-palette-gray text-palette-black border border-palette-blue focus:outline-none focus:ring-2 focus:ring-palette-green placeholder-palette-grayDark"
-            required
-            value={loginPassword}
-            onChange={e => setLoginPassword(e.target.value)}
-          />
-          <button
-            type="submit"
-            className="w-full bg-palette-green text-palette-black font-semibold py-2 rounded-lg shadow hover:bg-palette-yellow transition"
-            disabled={loginLoading}
-          >
-            {loginLoading ? "Logging in..." : "Login"}
-          </button>
-          {loginError && <div className="text-red-400 text-sm text-center mt-2">{loginError}</div>}
-          {loginSuccess && <div className="text-green-600 text-sm text-center mt-2">{loginSuccess}</div>}
-        </form>
-        {/* <div className="flex items-center my-2">
-          <div className="flex-grow h-px bg-palette-cyan" />
-          <span className="mx-2 text-black/70 text-sm">or</span>
-          <div className="flex-grow h-px bg-palette-cyan" />
-        </div> */}
-      </Modal>
-      <Modal open={showSignup} onClose={() => { setShowSignup(false); setSignupError(""); setSignupSuccess(""); setGoogleSignupDisabled(false); }}>
-        <h2 className="text-2xl font-bold text-palette-black mb-6 text-center">Sign Up</h2>
-        <form className="space-y-4 mb-4" onSubmit={handleSignup}>
-          <input
-            type="text"
-            placeholder="Username"
-            className="w-full px-4 py-2 rounded-lg bg-palette-gray text-palette-black border border-palette-blue focus:outline-none focus:ring-2 focus:ring-palette-green placeholder-palette-grayDark"
-            required
-            value={signupUsername}
-            onChange={e => setSignupUsername(e.target.value)}
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full px-4 py-2 rounded-lg bg-palette-gray text-palette-black border border-palette-blue focus:outline-none focus:ring-2 focus:ring-palette-green placeholder-palette-grayDark"
-            required
-            value={signupEmail}
-            onChange={e => setSignupEmail(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            className="w-full px-4 py-2 rounded-lg bg-palette-gray text-palette-black border border-palette-blue focus:outline-none focus:ring-2 focus:ring-palette-green placeholder-palette-grayDark"
-            required
-            value={signupPassword}
-            onChange={e => setSignupPassword(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Confirm Password"
-            className="w-full px-4 py-2 rounded-lg bg-palette-gray text-palette-black border border-palette-blue focus:outline-none focus:ring-2 focus:ring-palette-green placeholder-palette-grayDark"
-            required
-            value={signupConfirm}
-            onChange={e => setSignupConfirm(e.target.value)}
-          />
-          <button
-            type="submit"
-            className="w-full bg-palette-blue text-palette-black font-semibold py-2 rounded-lg shadow hover:bg-palette-yellow transition"
-            disabled={signupLoading}
-          >
-            {signupLoading ? "Signing up..." : "Sign Up"}
-          </button>
-          {signupError && <div className="text-red-400 text-sm text-center mt-2">{signupError}</div>}
-          {signupSuccess && <div className="text-green-600 text-sm text-center mt-2">{signupSuccess}</div>}
-        </form>
-        {/* <div className="flex items-center my-2">
-          <div className="flex-grow h-px bg-palette-cyan" />
-          <span className="mx-2 text-black/70 text-sm">or</span>
-          <div className="flex-grow h-px bg-palette-cyan" />
-        </div> */}
-      </Modal>
-      {/* Hero Section */}
-      <section className="w-full max-w-6xl flex flex-col md:flex-row items-center justify-between py-6 md:py-12 gap-8 md:gap-16 bg-transparent">
+      <section className="w-full max-w-6xl flex flex-col md:flex-row items-center justify-between py-8 md:py-20 gap-10 md:gap-20 px-2 sm:px-8">
         {/* Left: Text and Actions */}
-        <div className="flex-1 w-full max-w-full md:max-w-[650px] mb-8 md:mb-0">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-extrabold text-palette-black mb-4 md:mb-6 leading-tight">
-            UnifyCall <br />
-            with one-click
+        <div className="flex-1 w-full max-w-full md:max-w-[650px] mb-10 md:mb-0 px-2 sm:px-4">
+          <h1 className="text-2xl sm:text-3xl md:text-5xl font-extrabold text-white mb-4 md:mb-8 leading-tight">
+            UnifyCall <br />with one-click
           </h1>
-          <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-5xl font-extrabold text-palette-blue mb-2 md:mb-4 leading-tight">
+          <h3 className="text-lg sm:text-xl md:text-3xl font-extrabold text-white mb-2 md:mb-4 leading-tight">
             Seamless Video Calling for Everyone
           </h3>
-          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-palette-black mb-4 md:mb-8">
+          <p className="text-sm sm:text-base md:text-lg text-white mb-6 md:mb-10 opacity-90">
             Experience effortless, playful video meetings—connect face-to-face, anytime, anywhere.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mb-6 md:mb-8 w-full">
-            <button className="bg-palette-yellow text-palette-black px-4 py-2 md:px-6 md:py-3 rounded-lg font-semibold shadow transition flex items-center gap-2 w-full sm:w-auto border border-palette-grayDark hover:bg-palette-peach">
+            <button className="bg-black text-white rounded-full px-6 py-3 font-semibold text-base w-full sm:w-auto hover:bg-gray-800 transition">
               Try for free <span className="ml-1">▶️</span>
             </button>
-            <button className="flex items-center gap-2 border border-palette-blue text-palette-blue px-4 py-2 md:px-6 md:py-3 rounded-lg font-semibold hover:bg-palette-green transition w-full sm:w-auto bg-white">
+            <button className="border border-white text-white rounded-full px-6 py-3 font-semibold text-base w-full sm:w-auto hover:bg-white hover:text-black transition bg-transparent">
               Get a Demo
             </button>
           </div>
@@ -301,13 +203,13 @@ function Landing() {
         {/* Right: Image Slider */}
         <div className="flex-1 w-full max-w-full md:max-w-[650px] flex flex-col gap-4 md:gap-6 items-center md:items-end pr-0 md:pr-8">
           <div className="w-full flex justify-center md:justify-end">
-            <div className="relative flex items-center justify-center w-full h-48 sm:h-64 md:w-[500px] md:h-[350px] lg:w-[650px] lg:h-[500px] rounded-3xl bg-palette-blue shadow-xl mx-auto">
+            <div className="relative flex items-center justify-center w-full h-40 sm:h-56 md:w-[500px] md:h-[350px] lg:w-[650px] lg:h-[500px] mx-auto">
               <img
                 src={landingAvatars[currentAvatar].src}
                 alt={landingAvatars[currentAvatar].title}
-                className="rounded-3xl w-full h-full object-contain transition-all duration-700 bg-white border-4 border-palette-yellow shadow-lg mx-auto"
+                className="rounded-3xl w-full h-full object-contain transition-all duration-700 bg-[#00B5D9] mx-auto"
               />
-              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-palette-grayLight/90 px-2 py-0.5 rounded-lg shadow text-palette-black font-medium text-xs md:text-sm text-center">
+              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-white/80 px-3 py-1 rounded-lg text-black font-medium text-xs md:text-sm text-center">
                 {landingAvatars[currentAvatar].title}
               </div>
               {/* Slider dots */}
@@ -315,7 +217,7 @@ function Landing() {
                 {landingAvatars.map((_, idx) => (
                   <button
                     key={idx}
-                    className={`w-2 h-2 md:w-3 md:h-3 rounded-full border border-white ${currentAvatar === idx ? 'bg-palette-cyan' : 'bg-white/60'}`}
+                    className={`w-2 h-2 md:w-3 md:h-3 rounded-full border border-white ${currentAvatar === idx ? 'bg-black' : 'bg-white/60'}`}
                     onClick={() => setCurrentAvatar(idx)}
                     aria-label={`Go to avatar slide ${idx + 1}`}
                   />
@@ -326,21 +228,118 @@ function Landing() {
         </div>
       </section>
       {/* Trusted by Section */}
-      <section className="w-full max-w-6xl px-4 sm:px-8 py-8 flex flex-col items-center">
-        <span className="text-black mb-4">Trusted by teams and professionals worldwide.</span>
+      <section className="w-full max-w-6xl px-3 sm:px-8 py-8 flex flex-col items-center">
+        <span className="text-white mb-4">Trusted by teams and professionals worldwide.</span>
         <div className="flex flex-wrap gap-8 justify-center items-center">
-          <span className="text-black font-bold text-xl">stripe</span>
-          <span className="text-black font-bold text-xl">loom</span>
-          <span className="text-black font-bold text-xl">WhatsApp</span>
-          <span className="text-black font-bold text-xl">YouTube</span>
-          <span className="text-black font-bold text-xl">zoom</span>
+          <span className="text-white font-bold text-lg sm:text-xl">stripe</span>
+          <span className="text-white font-bold text-lg sm:text-xl">loom</span>
+          <span className="text-white font-bold text-lg sm:text-xl">WhatsApp</span>
+          <span className="text-white font-bold text-lg sm:text-xl">YouTube</span>
+          <span className="text-white font-bold text-lg sm:text-xl">zoom</span>
         </div>
       </section>
       {/* Features Section */}
-      <section className="w-full max-w-6xl px-4 sm:px-8 py-12">
-        <h2 className="text-3xl font-extrabold text-palette-black mb-6">Flexible, Powerful Video Calling</h2>
-        <p className="text-lg text-palette-black mb-4">Virtual communication is made easier and more efficient with our platform's innovative video call features. Have seamless face-to-face conversations and collaborate in real time.</p>
+      <section className="w-full max-w-6xl px-3 sm:px-8 py-12">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-6">Flexible, Powerful Video Calling</h2>
+        <p className="text-base sm:text-lg text-white mb-4 opacity-90">Virtual communication is made easier and more efficient with our platform's innovative video call features. Have seamless face-to-face conversations and collaborate in real time.</p>
       </section>
+      {/* Login Modal */}
+      <Modal open={showLogin} onClose={() => setShowLogin(false)}>
+        <h2 className="text-2xl font-bold text-center mb-4">Login</h2>
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div>
+            <label htmlFor="loginEmail" className="block text-sm font-medium text-gray-700">Email</label>
+            <input
+              type="email"
+              id="loginEmail"
+              value={loginEmail}
+              onChange={(e) => setLoginEmail(e.target.value)}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#00B5D9] focus:ring-[#00B5D9] text-base h-12 py-3 px-4"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="loginPassword" className="block text-sm font-medium text-gray-700">Password</label>
+            <input
+              type="password"
+              id="loginPassword"
+              value={loginPassword}
+              onChange={(e) => setLoginPassword(e.target.value)}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#00B5D9] focus:ring-[#00B5D9] text-base h-12 py-3 px-4"
+              required
+            />
+          </div>
+          {loginError && <p className="text-red-500 text-sm">{loginError}</p>}
+          {loginSuccess && <p className="text-green-500 text-sm">{loginSuccess}</p>}
+          <button
+            type="submit"
+            disabled={loginLoading}
+            className="w-full bg-[#00B5D9] text-white rounded-full px-4 py-2 font-semibold text-base hover:bg-blue-700 transition"
+          >
+            {loginLoading ? "Logging in..." : "Login"}
+          </button>
+        </form>
+      </Modal>
+
+      {/* Signup Modal */}
+      <Modal open={showSignup} onClose={() => setShowSignup(false)}>
+        <h2 className="text-2xl font-bold text-center mb-4">Sign Up</h2>
+        <form onSubmit={handleSignup} className="space-y-4">
+          <div>
+            <label htmlFor="signupUsername" className="block text-sm font-medium text-gray-700">Username</label>
+            <input
+              type="text"
+              id="signupUsername"
+              value={signupUsername}
+              onChange={(e) => setSignupUsername(e.target.value)}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#00B5D9] focus:ring-[#00B5D9] text-base h-12 py-3 px-4"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="signupEmail" className="block text-sm font-medium text-gray-700">Email</label>
+            <input
+              type="email"
+              id="signupEmail"
+              value={signupEmail}
+              onChange={(e) => setSignupEmail(e.target.value)}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#00B5D9] focus:ring-[#00B5D9] text-base h-12 py-3 px-4"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="signupPassword" className="block text-sm font-medium text-gray-700">Password</label>
+            <input
+              type="password"
+              id="signupPassword"
+              value={signupPassword}
+              onChange={(e) => setSignupPassword(e.target.value)}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#00B5D9] focus:ring-[#00B5D9] text-base h-12 py-3 px-4"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="signupConfirm" className="block text-sm font-medium text-gray-700">Confirm Password</label>
+            <input
+              type="password"
+              id="signupConfirm"
+              value={signupConfirm}
+              onChange={(e) => setSignupConfirm(e.target.value)}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#00B5D9] focus:ring-[#00B5D9] text-base h-12 py-3 px-4"
+              required
+            />
+          </div>
+          {signupError && <p className="text-red-500 text-sm">{signupError}</p>}
+          {signupSuccess && <p className="text-green-500 text-sm">{signupSuccess}</p>}
+          <button
+            type="submit"
+            disabled={signupLoading}
+            className="w-full bg-[#00B5D9] text-white rounded-full px-4 py-2 font-semibold text-base hover:bg-blue-700 transition"
+          >
+            {signupLoading ? "Signing up..." : "Sign Up"}
+          </button>
+        </form>
+      </Modal>
     </div>
   );
 }
