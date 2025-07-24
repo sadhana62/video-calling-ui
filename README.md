@@ -17,7 +17,7 @@ A real-time video calling web application built with React, WebRTC, and deployed
 [Click here to open the app](https://video-calling-ui-video-call-e554e807.vercel.app/)
 
 ## 📸 Screenshots:
-(Add 1–2 screenshots here)
+
 
 ## 📦 Run Locally:
 ```bash
